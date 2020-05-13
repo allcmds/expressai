@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/allcmds/expressai/issues"
   },
-  "homepage": "https://github.com/allcmds/expressai#readme"
+  "homepage": "https://github.com/allcmds/expressai#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
