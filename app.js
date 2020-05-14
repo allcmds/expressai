@@ -8,7 +8,7 @@ const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({extended: false})); // to parse the req body sent through a form; not files, json, etc
 
-app.use(adminRoutes);
+app.use('/admin',adminRoutes); // /admin path filter
 app.use(shopRoutes);
 
 app.use((req, res, next) => { // catch all paths and methods
