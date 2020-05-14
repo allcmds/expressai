@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({extended: false})); // to parse the req body sent through a form; not files, json, etc
+app.use(express.static(path.join(__dirname, 'public'))); // grant read access to the public folder
 
 app.use('/admin',adminRoutes); // /admin path filter
 app.use(shopRoutes);
