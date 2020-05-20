@@ -44,7 +44,7 @@ exports.getSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  User.findOne({email: email})
+  User.findOne({ email: email })
     .then(user => {
       if (!user) {
         req.flash('error', 'Invalid email or password.');
@@ -84,13 +84,7 @@ exports.postSignup = (req, res, next) => {
       errorMessage: errors.array()[0].msg
     });
   }
-  User.findOne({email: email})
-  .then(userDoc => {
-    if (userDoc) {
-      req.flash('error', 'Email exists already. Pick a different one.');
-      return res.redirect('/signup');
-    }
-    return bcrypt
+  bcrypt
     .hash(password, 12)
     .then(hashedPassword => {
       const user = new User({
@@ -108,16 +102,12 @@ exports.postSignup = (req, res, next) => {
         from: `${process.env.SENDGRID_FROM_EMAIL}`,
         subject: 'Signup succedded!',
         html: '<h1>You successfully signed up</h1>'
-      });
+      })
+        .catch(err => {
+          console.log(err);
+        });
     })
-    .catch(err => {
-      console.log(err);
-    })
-  })
-  .catch(err => {
-    console.log('postSignup: ',err)
-  });
-};
+}
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy(err => {
@@ -147,7 +137,7 @@ exports.postReset = (req, res, next) => {
       return res.redirect('/reset');
     }
     const token = buffer.toString('hex'); // convert to hex
-    User.findOne({email: req.body.email})
+    User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
           req.flash('error', 'No account found for that email.');
@@ -170,14 +160,14 @@ exports.postReset = (req, res, next) => {
         });
       })
       .catch(err => {
-      console.log(err);
-    });
+        console.log(err);
+      });
   });
 };
 
 exports.getNewPassword = (req, res, next) => {
   const token = req.params.token;
-  User.findOne({resetToken: token, resetTokenExpiration: {$gt: Date.now()}})
+  User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
     .then(user => {
       let message = req.flash('error');
       if (message.length > 0) {
@@ -191,7 +181,7 @@ exports.getNewPassword = (req, res, next) => {
         errorMessage: message,
         userId: user._id.toString(),
         passwordToken: token
-      });    
+      });
     })
     .catch(err => {
       console.log(err);
@@ -205,8 +195,8 @@ exports.postNewPassword = (req, res, next) => {
   let resetUser;
 
   User.findOne({
-    resetToken: passwordToken, 
-    resetTokenExpiration: {$gt: Date.now()}, 
+    resetToken: passwordToken,
+    resetTokenExpiration: { $gt: Date.now() },
     _id: userId
   })
     .then(user => {
@@ -223,6 +213,6 @@ exports.postNewPassword = (req, res, next) => {
       res.redirect('/login')
     })
     .catch(err => {
-    console.log(err);
-  })
+      console.log(err);
+    })
 };
