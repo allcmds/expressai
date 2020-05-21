@@ -66,8 +66,11 @@ exports.postAddProduct = (req, res, next) => {
       //     errorMessage: 'Database operation failed, please try again.',
       //     validationErrors: []
       //   });
-      res.redirect('/500');
-    });
+      // res.redirect('/500');
+      const error = new Error(err);
+      error.httpStatusCode = 500;   // adding a new field to the error data structure
+      return next(error);  // this will make node skip all middleware and go to the Error handling middleware.
+    }); // instead of throwing => use next(error) to go stright to Node's Error handling
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -91,7 +94,9 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors: []
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      res.redirect('/500');
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {

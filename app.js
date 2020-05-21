@@ -72,6 +72,10 @@ app.get('/500', errorController.get500);
 
 app.use(errorController.get404);
 
+app.use((error, req, res, next) => {  // called with next(error) - for Node's error handing 
+  res.redirect('/500');
+});
+
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(result => {
