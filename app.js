@@ -72,7 +72,8 @@ app.get('/500', errorController.get500);
 
 app.use(errorController.get404);
 
-app.use((error, req, res, next) => {  // called with next(error) - for Node's error handing 
+app.use((error, req, res, next) => {  // called with next(error) - for Node's central error handing 
+  // res.status(error.httpStatusCode.render(...))
   res.redirect('/500');
 });
 
