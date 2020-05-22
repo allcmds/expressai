@@ -153,6 +153,8 @@ exports.getInvoice = (req, res, next) => {
     if (err) {
       return next(err);   // return so the next code will not execute
     }
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
     res.send(data);
   });
 };
