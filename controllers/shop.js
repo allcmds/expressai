@@ -157,15 +157,19 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = 'invoice-' + orderId + '.pdf';
       const invoicePath = path.join('data', 'invoices', invoiceName);
-      fs.readFile(invoicePath, (err, data) => {
-        if (err) {
-          console.log(err);
-          return next(err);   // return so the next code will not execute
-        }
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
-        res.send(data);
-      });
+      // fs.readFile(invoicePath, (err, data) => { // Read through memory / for small files Ok
+      //   if (err) {
+      //     console.log(err);
+      //     return next(err);   // return so the next code will not execute
+      //   }
+      //   res.setHeader('Content-Type', 'application/pdf');
+      //   res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
+      //   res.send(data);
+      // });
+      const file = fs.createReadStream(invoicePath);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
+      file.pipe(res);  // pipe readable streams (fs) into res is writable stream / No need for Node to preload all data/file into memory / just streams it to the browser on the fly / max one chaunk of data to store in mem
     })
     .catch(err => next(err));
 };
