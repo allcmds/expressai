@@ -36,7 +36,7 @@ const fileFilter = (req, file, cb) => {
     file.mimetype === 'image/png' ||
     file.mimetype === 'image/jpg' ||
     file.mimetype === 'image/jpeg' ||
-    file.mimetype === 'image/svg') {
+    file.mimetype === 'image/svg') {  // it seems that svg doesn't work
     cb(null, true); // no error, store
   } else {
     cb(null, false); // no error but do not store
