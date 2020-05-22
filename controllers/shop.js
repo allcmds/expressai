@@ -151,10 +151,11 @@ exports.getInvoice = (req, res, next) => {
   const invoicePath = path.join('data', 'invoices', invoiceName);
   fs.readFile(invoicePath, (err, data) => {
     if (err) {
+      console.log(err);
       return next(err);   // return so the next code will not execute
     }
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
+    res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
     res.send(data);
   });
 };
