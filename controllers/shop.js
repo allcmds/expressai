@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const PDFDocument = require('pdfkit');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -157,6 +159,17 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = 'invoice-' + orderId + '.pdf';
       const invoicePath = path.join('data', 'invoices', invoiceName);
+
+      const pdfDoc = new PDFDocument();   // pdfDoc is a readable stream
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
+
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));   // create the invoice on the server @ invoicePath
+      pdfDoc.pipe(res);   // send the doc in response to the client
+      // Create the file content
+      pdfDoc.text('Hello World!');    // Add a line of thext to the doc
+
+      pdfDoc.end();
       // fs.readFile(invoicePath, (err, data) => { // Read through memory / for small files Ok
       //   if (err) {
       //     console.log(err);
@@ -166,10 +179,8 @@ exports.getInvoice = (req, res, next) => {
       //   res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
       //   res.send(data);
       // });
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"'); // or inline (instead of attachment) for opening in the browser
-      file.pipe(res);  // pipe readable streams (fs) into res is writable stream / No need for Node to preload all data/file into memory / just streams it to the browser on the fly / max one chaunk of data to store in mem
+      // const file = fs.createReadStream(invoicePath);
+      // file.pipe(res);  // pipe readable streams (fs) into res is writable stream / No need for Node to preload all data/file into memory / just streams it to the browser on the fly / max one chaunk of data to store in mem
     })
     .catch(err => next(err));
 };
