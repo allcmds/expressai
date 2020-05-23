@@ -193,9 +193,9 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  console.log('- Deleting product: ', prodId, ' of user: ', req.user.email);
+  console.log('- Deleting product: ', prodId, ' by user: ', req.user.email);
   // Product.findByIdAndRemove(prodId)
-  product.findById(prodId)
+  Product.findById(prodId)
     .then(product => {
       if (!product) {
         return next(new Error('Product not found.'));
