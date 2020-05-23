@@ -177,7 +177,7 @@ exports.getProducts = (req, res, next) => {
     // .select('title price -_id')
     // .populate('userId', 'name')
     .then(products => {
-      console.log(products);
+      // console.log(products);
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
@@ -193,6 +193,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
+  console.log('- Deleting product: ', prodId, ' of user: ', req.user.email);
   // Product.findByIdAndRemove(prodId)
   product.findById(prodId)
     .then(product => {
@@ -208,6 +209,7 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .catch(err => {
       const error = new Error(err);
+      console.log(err);
       error.httpStatusCode = 500;
       return next(error);
     });
