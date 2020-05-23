@@ -167,7 +167,19 @@ exports.getInvoice = (req, res, next) => {
       pdfDoc.pipe(fs.createWriteStream(invoicePath));   // create the invoice on the server @ invoicePath
       pdfDoc.pipe(res);   // send the doc in response to the client
       // Create the file content
-      pdfDoc.text('Hello World!');    // Add a line of thext to the doc
+      // pdfDoc.text('Hello World!');    // Add a line of thext to the doc
+
+      pdfDoc.fontSize(26).text('Invoice', {   // Title
+        underline: true
+      });
+      pdfDoc.fontSize(14).text('--------------');
+      let totalPrice = 0;
+      order.products.forEach(prod => {
+        totalPrice += prod.quantity * prod.product.price;
+        pdfDoc.text(prod.product.title + ' - ' + prod.quantity + ' x ' + '$' + prod.product.price)
+      });
+      pdfDoc.text('--------------');
+      pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
 
       pdfDoc.end();
       // fs.readFile(invoicePath, (err, data) => { // Read through memory / for small files Ok
