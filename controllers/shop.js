@@ -13,7 +13,8 @@ exports.getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
   let totalItems;
 
-  Product.find().countDocuments()
+  Product.find()
+    .countDocuments()
     .then(numProducts => {
       totalItems = numProducts;
       return Product.find()
@@ -61,7 +62,8 @@ exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
   let totalItems;
 
-  Product.find().countDocuments()
+  Product.find()
+    .countDocuments()
     .then(numProducts => {
       totalItems = numProducts;
       return Product.find()
@@ -114,8 +116,13 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then(result => {
-      console.log('postCart: ', result);
+      console.log(result);
       res.redirect('/cart');
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -136,7 +143,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   let products;
   let total = 0;
-
   req.user
     .populate('cart.items.productId')
     .execPopulate()
@@ -147,7 +153,7 @@ exports.getCheckout = (req, res, next) => {
         total += p.quantity * p.productId.price;
       });
 
-      return stripe.checkout.session.create({
+      return stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: products.map(p => {
           return {
@@ -156,7 +162,7 @@ exports.getCheckout = (req, res, next) => {
             amount: p.productId.price * 100,
             currency: 'usd',
             quantity: p.quantity
-          }; // Format required by Stripe: 'card' means accepting credit cards; amount is in cents => '* 100'
+          };
         }),
         success_url: req.protocol + '://' + req.get('host') + '/checkout/success', // => http://localhost:3000
         cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
@@ -207,7 +213,6 @@ exports.getCheckoutSuccess = (req, res, next) => {
       return next(error);
     });
 };
-
 
 exports.postOrder = (req, res, next) => {
   req.user
