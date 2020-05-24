@@ -14,7 +14,7 @@ const deleteProduct = (btn) => {
             return result.json();
         })
         .then(data => {
-            console.log(data);
+            // console.log(data);
             // productElement.remove();    // works in modern browsers            
             productElement.parentNode.removeChild(productElement);    // works also in IE           
         })
